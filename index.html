@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Carina Cosmetics – Voice</title>
+  <script src="https://cdn.retellai.com/web-sdk.js" defer></script>
+  <style>
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0b0b0b;color:#fff;font:16px system-ui}
+    .card{width:min(680px,92vw);padding:28px;border-radius:16px;border:1px solid #c8a97e44;background:rgba(255,255,255,.06);backdrop-filter:blur(12px);text-align:center}
+    button{padding:14px 22px;border:0;border-radius:12px;font-weight:700;cursor:pointer;background:linear-gradient(180deg,#D9B77F,#C8A97E);color:#111}
+    button[disabled]{opacity:.6;cursor:wait}
+    .hint{opacity:.75;margin-top:10px}
+    a{color:#cbd}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Herzlich willkommen bei Carina Cosmetics</h1>
+    <p>Ich bin deine persönliche Beauty-Assistentin — wie kann ich dir helfen?</p>
+    <button id="voiceBtn">🎤 Jetzt sprechen</button>
+    <div class="hint">Bitte Mikrofon erlauben.</div>
+    <p><a id="back" href="#">Zurück</a></p>
+  </div>
+
+  <script>
+    const AGENT_ID = 'agent_2ef0bb4ea2ed7e53220f46df3c';
+    const p = new URL(location.href).searchParams;
+    document.getElementById('back').href = p.get('returnTo') || 'https://carina-cosmetic.de';
+
+    async function callToken() {
+      const r = await fetch('/api2/token', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ agentId: AGENT_ID })
+      });
+      return r.json();
+    }
+
+    document.getElementById('voiceBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('voiceBtn');
+      try {
+        btn.disabled = true;
+        btn.textContent = '🔄 Starte…';
+
+        const { token, error } = await callToken();
+        if (error || !token) throw new Error(error || 'Kein Token');
+
+        if (!(window.retell && window.retell.createClient)) {
+          throw new Error('Web-SDK nicht geladen');
+        }
+
+        const client = window.retell.createClient({});
+        await client.start({ agentId: AGENT_ID, clientSecret: token, accessToken: token });
+        btn.textContent = '🔊 Live verbunden';
+      } catch (e) {
+        alert('Fehler: ' + (e.message || e));
+        btn.textContent = '🎤 Jetzt sprechen';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

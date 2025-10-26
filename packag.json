@@ -1,0 +1,11 @@
+{
+  "name": "carina_voice_chat",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "start": "vercel dev"
+  }
+}

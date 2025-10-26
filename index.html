@@ -29,7 +29,7 @@
     document.getElementById('back').href = p.get('returnTo') || 'https://carina-cosmetic.de';
 
     async function callToken() {
-      const r = await fetch('/api2/token', {
+      const r = await fetch('/api/token', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({ agentId: AGENT_ID })
